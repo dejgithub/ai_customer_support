@@ -1,0 +1,17 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/smartsupport-backend', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/smartsupport-backend']
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      - 'gcloud'
+      - 'run'
+      - 'deploy'
+      - 'smartsupport-backend'
+      - '--image=gcr.io/$PROJECT_ID/smartsupport-backend'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--add-cloudsql-instances=$PROJECT_ID:region:smartsupport-db'
+      - '--set-env-vars=DATABASE_URL=postgresql+asyncpg://postgres:password@//cloudsql/$PROJECT_ID:region:smartsupport-db/smartsupport'

@@ -27,12 +27,12 @@ export default function DashboardPage() {
             total_tickets: 0, open_tickets: 0, total_appointments: 0,
             total_orders: 0, total_revenue: 0, satisfaction_score: 0, escalation_rate: 0,
           })),
-          support.getConversations('limit=5').catch(() => []),
-          appointApi.list('limit=3').catch(() => []),
+          support.getConversations('per_page=5').catch(() => ({ conversations: [] })),
+          appointApi.list('per_page=3').catch(() => ({ appointments: [] })),
         ]);
         setStats(statsData);
-        setConversations(Array.isArray(convs) ? convs : []);
-        setAppointments(Array.isArray(apps) ? apps : []);
+        setConversations(convs.conversations || []);
+        setAppointments(apps.appointments || []);
       } catch (err) {
         console.error('Failed to load dashboard data', err);
       } finally {

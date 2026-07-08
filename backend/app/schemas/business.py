@@ -38,9 +38,13 @@ class BusinessUpdate(BaseModel):
 class BusinessStats(BaseModel):
     total_customers: int = 0
     total_conversations: int = 0
+    active_conversations: int = 0
     total_tickets: int = 0
+    open_tickets: int = 0
     total_appointments: int = 0
+    upcoming_appointments: int = 0
     total_orders: int = 0
     total_revenue: float = 0
     satisfaction_score: float = 0
     escalation_rate: float = 0
+    avg_response_time: float = 0

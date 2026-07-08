@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE = typeof window !== 'undefined' ? '' : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000');
 
 async function request(path: string, options: RequestInit = {}) {
   const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
@@ -61,7 +61,7 @@ export const products = {
 };
 
 export const knowledge = {
-  upload: (formData: FormData) => fetch(`${API_BASE}/api/v1/knowledge/upload`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` } as any, body: formData }).then(r => r.json()),
+  upload: (formData: FormData) => fetch(`/api/v1/knowledge/upload`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` } as any, body: formData }).then(r => r.json()),
   list: (params?: string) => request(`/api/v1/knowledge/documents${params ? '?' + params : ''}`),
   delete: (id: string) => request(`/api/v1/knowledge/documents/${id}`, { method: 'DELETE' }),
   search: (query: string) => request('/api/v1/knowledge/search', { method: 'POST', body: JSON.stringify({ query }) }),

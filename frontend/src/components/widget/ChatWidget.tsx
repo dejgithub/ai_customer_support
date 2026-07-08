@@ -24,7 +24,7 @@ export default function ChatWidget({
     setMessages(prev => [...prev, { sender: 'user', text }]);
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/support/chat`, {
+      const res = await fetch(`/api/v1/support/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text, business_id: businessId }),

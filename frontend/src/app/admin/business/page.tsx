@@ -51,43 +51,43 @@ export default function BusinessPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="label">Business Name</label>
-            <input className="input" value={form.name || ''} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+            <input className="input" value={form.name || ''} onChange={e => setForm((f: any) => ({ ...f, name: e.target.value }))} />
           </div>
           <div>
             <label className="label">Email</label>
-            <input type="email" className="input" value={form.email || ''} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+            <input type="email" className="input" value={form.email || ''} onChange={e => setForm((f: any) => ({ ...f, email: e.target.value }))} />
           </div>
           <div>
             <label className="label">Phone</label>
-            <input className="input" placeholder="+1 234 567 890" value={form.phone || ''} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} />
+            <input className="input" placeholder="+1 234 567 890" value={form.phone || ''} onChange={e => setForm((f: any) => ({ ...f, phone: e.target.value }))} />
           </div>
           <div>
             <label className="label">Category</label>
-            <select className="input" value={form.category || ''} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
+            <select className="input" value={form.category || ''} onChange={e => setForm((f: any) => ({ ...f, category: e.target.value }))}>
               {categories.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
           <div className="md:col-span-2">
             <label className="label">Address</label>
-            <input className="input" placeholder="Street, City, Country" value={form.address || ''} onChange={e => setForm(f => ({ ...f, address: e.target.value }))} />
+            <input className="input" placeholder="Street, City, Country" value={form.address || ''} onChange={e => setForm((f: any) => ({ ...f, address: e.target.value }))} />
           </div>
           <div className="md:col-span-2">
             <label className="label">Description</label>
-            <textarea className="input min-h-[80px]" placeholder="Tell customers about your business" value={form.description || ''} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+            <textarea className="input min-h-[80px]" placeholder="Tell customers about your business" value={form.description || ''} onChange={e => setForm((f: any) => ({ ...f, description: e.target.value }))} />
           </div>
           <div>
             <label className="label">Website</label>
-            <input className="input" placeholder="https://example.com" value={form.website || ''} onChange={e => setForm(f => ({ ...f, website: e.target.value }))} />
+            <input className="input" placeholder="https://example.com" value={form.website || ''} onChange={e => setForm((f: any) => ({ ...f, website: e.target.value }))} />
           </div>
           <div>
             <label className="label">Timezone</label>
-            <select className="input" value={form.timezone || 'UTC'} onChange={e => setForm(f => ({ ...f, timezone: e.target.value }))}>
+            <select className="input" value={form.timezone || 'UTC'} onChange={e => setForm((f: any) => ({ ...f, timezone: e.target.value }))}>
               {timezones.map(tz => <option key={tz} value={tz}>{tz}</option>)}
             </select>
           </div>
           <div>
             <label className="label">Logo URL</label>
-            <input className="input" placeholder="https://storage.googleapis.com/..." value={form.logo_url || ''} onChange={e => setForm(f => ({ ...f, logo_url: e.target.value }))} />
+            <input className="input" placeholder="https://storage.googleapis.com/..." value={form.logo_url || ''} onChange={e => setForm((f: any) => ({ ...f, logo_url: e.target.value }))} />
           </div>
           <div>
             <label className="label">Subscription</label>

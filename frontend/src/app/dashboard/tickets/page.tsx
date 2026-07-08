@@ -27,7 +27,7 @@ export default function TicketsPage() {
 
   useEffect(() => {
     ticketsApi.list().then(data => {
-      setTickets(Array.isArray(data) ? data : []);
+      setTickets(data.tickets || []);
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
@@ -45,7 +45,7 @@ export default function TicketsPage() {
       setShowNew(false);
       setNewForm({ subject: '', description: '', priority: 'medium', category: '' });
       const data = await ticketsApi.list();
-      setTickets(Array.isArray(data) ? data : []);
+      setTickets(data.tickets || []);
     } catch (err: any) { toast.error(err.message); }
   };
 

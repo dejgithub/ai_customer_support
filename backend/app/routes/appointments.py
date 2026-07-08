@@ -1,8 +1,10 @@
 import uuid
 from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
+from typing import Optional
 
 from app.database import get_db
 from app.schemas.appointment import AppointmentCreate, AppointmentResponse, SlotRequest, SlotResponse
@@ -93,11 +95,15 @@ async def list_appointments(
     }
 
 
+class AppointmentUpdate(BaseModel):
+    status: Optional[str] = None
+    notes: Optional[str] = None
+
+
 @router.put("/{appointment_id}", response_model=AppointmentResponse)
 async def update_appointment(
     appointment_id: str,
-    status: str,
-    notes: str = None,
+    data: AppointmentUpdate,
     user: User = Depends(require_auth),
     db: AsyncSession = Depends(get_db),
 ):
@@ -112,10 +118,10 @@ async def update_appointment(
     appointment = result.scalar_one_or_none()
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found")
-    if status:
-        appointment.status = status
-    if notes:
-        appointment.notes = notes
+    if data.status:
+        appointment.status = data.status
+    if data.notes:
+        appointment.notes = data.notes
     await db.flush()
     await db.refresh(appointment)
     return appointment

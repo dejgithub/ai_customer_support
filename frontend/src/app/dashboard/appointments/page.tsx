@@ -22,7 +22,7 @@ export default function AppointmentsPage() {
 
   useEffect(() => {
     appointApi.list().then(data => {
-      setAppointments(Array.isArray(data) ? data : []);
+      setAppointments(data.appointments || []);
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
@@ -36,7 +36,7 @@ export default function AppointmentsPage() {
       setShowNew(false);
       setForm({ title: '', customer_id: '', start_time: '', end_time: '', service_name: '' });
       const data = await appointApi.list();
-      setAppointments(Array.isArray(data) ? data : []);
+      setAppointments(data.appointments || []);
     } catch (err: any) { toast.error(err.message); }
   };
 
@@ -45,7 +45,7 @@ export default function AppointmentsPage() {
       await appointApi.update(id, { status });
       toast.success(`Status: ${status}`);
       const data = await appointApi.list();
-      setAppointments(Array.isArray(data) ? data : []);
+      setAppointments(data.appointments || []);
     } catch (err: any) { toast.error(err.message); }
   };
 

@@ -18,7 +18,7 @@ export default function KnowledgePage() {
 
   const loadDocs = () => {
     knowledge.list().then(data => {
-      setDocuments(Array.isArray(data) ? data : []);
+      setDocuments(data.documents || []);
     }).catch(() => {}).finally(() => setLoading(false));
   };
 

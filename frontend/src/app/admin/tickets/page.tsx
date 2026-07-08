@@ -21,7 +21,7 @@ export default function AdminTicketsPage() {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    ticketsApi.list().then(data => setTickets(Array.isArray(data) ? data : [])).catch(() => {}).finally(() => setLoading(false));
+    ticketsApi.list().then(data => setTickets(data.tickets || [])).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   const filtered = tickets.filter(t => {

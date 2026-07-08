@@ -17,7 +17,7 @@ export default function ProductsPage() {
 
   useEffect(() => {
     productsApi.list().then(data => {
-      setProducts(Array.isArray(data) ? data : []);
+      setProducts(data.products || []);
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
@@ -34,7 +34,7 @@ export default function ProductsPage() {
       setShowNew(false); setEditProduct(null);
       setForm({ name: '', description: '', price: 0, currency: 'USD', category: '', stock_quantity: 0, is_available: true });
       const data = await productsApi.list();
-      setProducts(Array.isArray(data) ? data : []);
+      setProducts(data.products || []);
     } catch (err: any) { toast.error(err.message); }
   };
 
@@ -49,7 +49,7 @@ export default function ProductsPage() {
       await productsApi.update(product.id, { is_available: !product.is_available });
       toast.success(`Product ${product.is_available ? 'disabled' : 'enabled'}`);
       const data = await productsApi.list();
-      setProducts(Array.isArray(data) ? data : []);
+      setProducts(data.products || []);
     } catch (err: any) { toast.error(err.message); }
   };
 

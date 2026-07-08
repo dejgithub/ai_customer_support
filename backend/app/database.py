@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import text
 from app.config import settings
 
 connect_args = {}
@@ -29,3 +30,12 @@ async def get_db():
 async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        if settings.DATABASE_URL.startswith("postgresql"):
+            try:
+                await conn.execute(text("ALTER TABLE customers ALTER COLUMN business_id DROP NOT NULL"))
+            except Exception:
+                pass
+            try:
+                await conn.execute(text("ALTER TABLE conversations ALTER COLUMN business_id DROP NOT NULL"))
+            except Exception:
+                pass

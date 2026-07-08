@@ -18,7 +18,7 @@ export default function ConversationsPage() {
 
   useEffect(() => {
     support.getConversations().then(data => {
-      setConversations(Array.isArray(data) ? data : []);
+      setConversations(data.conversations || []);
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 

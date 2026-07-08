@@ -3,7 +3,7 @@ import logging
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, func
 
 from app.database import get_db
 from app.schemas.conversation import ChatRequest, ChatResponse, ConversationResponse, MessageResponse
@@ -26,7 +26,7 @@ async def chat(
     db: AsyncSession = Depends(get_db),
 ):
     try:
-        business_id = None
+        business_id = data.business_id or None
         language = data.language or "en"
 
         if data.conversation_id:
@@ -39,7 +39,7 @@ async def chat(
             business_id = conversation.business_id
         else:
             customer = Customer(
-                business_id=None,
+                business_id=business_id,
                 name=data.customer_name or "Guest",
                 email=data.customer_email,
                 phone=data.customer_phone,
@@ -49,7 +49,7 @@ async def chat(
             await db.flush()
 
             conversation = Conversation(
-                business_id=None,
+                business_id=business_id,
                 customer_id=customer.id,
                 channel="web",
                 status="active",
@@ -113,13 +113,22 @@ async def chat(
             sender_id="smartsupport-ai",
             content=ai_response,
             content_type="text",
-            metadata={"intent": intent, "language": detected_lang},
+            meta_data=str({"intent": intent, "language": detected_lang}),
         )
         db.add(ai_msg)
         await db.flush()
 
+        ai_msg_response = MessageResponse(
+            id=str(ai_msg.id),
+            conversation_id=str(conversation.id),
+            sender_type="ai",
+            sender_id="smartsupport-ai",
+            content=ai_response,
+            content_type="text",
+            created_at=ai_msg.created_at or datetime.now(timezone.utc),
+        )
         return ChatResponse(
-            message=ai_response,
+            message=ai_msg_response,
             conversation_id=str(conversation.id),
             suggested_actions=suggested_actions,
         )
@@ -127,8 +136,17 @@ async def chat(
         raise
     except Exception as e:
         logger.error(f"Chat error: {e}", exc_info=True)
+        await db.rollback()
         return ChatResponse(
-            message="I'm sorry, I encountered an error. Please try again.",
+            message=MessageResponse(
+                id="",
+                conversation_id=data.conversation_id or "",
+                sender_type="ai",
+                sender_id="smartsupport-ai",
+                content="I'm sorry, I encountered an error. Please try again.",
+                content_type="text",
+                created_at=datetime.now(timezone.utc),
+            ),
             conversation_id=data.conversation_id or "",
             suggested_actions=[],
         )
@@ -148,8 +166,25 @@ async def list_conversations(
     query = query.order_by(Conversation.created_at.desc()).offset((page - 1) * per_page).limit(per_page)
     result = await db.execute(query)
     conversations = result.scalars().all()
+    conv_list = []
+    for c in conversations:
+        cust_result = await db.execute(select(Customer).where(Customer.id == c.customer_id))
+        customer = cust_result.scalar_one_or_none()
+        msg_result = await db.execute(
+            select(Message).where(Message.conversation_id == c.id).order_by(Message.created_at.desc()).limit(1)
+        )
+        last_msg = msg_result.scalar_one_or_none()
+        count_result = await db.execute(
+            select(func.count(Message.id)).where(Message.conversation_id == c.id)
+        )
+        msg_count = count_result.scalar() or 0
+        conv_dict = ConversationResponse.model_validate(c).model_dump()
+        conv_dict["customer_name"] = customer.name if customer else "Unknown"
+        conv_dict["last_message"] = last_msg.content if last_msg else None
+        conv_dict["message_count"] = msg_count
+        conv_list.append(conv_dict)
     return {
-        "conversations": [ConversationResponse.model_validate(c) for c in conversations],
+        "conversations": conv_list,
         "page": page,
         "per_page": per_page,
     }
@@ -178,7 +213,14 @@ async def get_conversation(
         .order_by(Message.created_at)
     )
     conversation.messages = messages_result.scalars().all()
-    return conversation
+    cust_result = await db.execute(select(Customer).where(Customer.id == conversation.customer_id))
+    customer = cust_result.scalar_one_or_none()
+    resp = ConversationResponse.model_validate(conversation)
+    resp.customer_name = customer.name if customer else None
+    resp.message_count = len(conversation.messages)
+    if conversation.messages:
+        resp.last_message = conversation.messages[-1].content
+    return resp
 
 
 @router.post("/conversations/{conversation_id}/escalate")

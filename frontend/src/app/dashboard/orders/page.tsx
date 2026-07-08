@@ -25,7 +25,7 @@ export default function OrdersPage() {
 
   useEffect(() => {
     ordersApi.list().then(data => {
-      setOrders(Array.isArray(data) ? data : []);
+      setOrders(data.orders || []);
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
@@ -40,7 +40,7 @@ export default function OrdersPage() {
       setShowNew(false);
       setForm({ customer_id: '', order_number: '', total_amount: 0, currency: 'USD', items: [{ name: '', quantity: 1, unit_price: 0, total_price: 0 }] });
       const data = await ordersApi.list();
-      setOrders(Array.isArray(data) ? data : []);
+      setOrders(data.orders || []);
     } catch (err: any) { toast.error(err.message); }
   };
 
@@ -96,7 +96,7 @@ export default function OrdersPage() {
                       <div className="flex gap-1">
                         {order.status !== 'delivered' && order.status !== 'cancelled' && (
                           <select className="text-xs border border-gray-200 rounded px-2 py-1" onChange={async e => {
-                            try { await ordersApi.updateStatus(order.id, e.target.value); toast.success('Status updated'); const data = await ordersApi.list(); setOrders(Array.isArray(data) ? data : []); } catch (err: any) { toast.error(err.message); }
+                            try { await ordersApi.updateStatus(order.id, e.target.value); toast.success('Status updated'); const data = await ordersApi.list(); setOrders(data.orders || []); } catch (err: any) { toast.error(err.message); }
                           }}>
                             <option value="">Update</option>
                             {['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'].map(s => <option key={s} value={s}>{s}</option>)}

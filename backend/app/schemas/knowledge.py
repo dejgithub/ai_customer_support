@@ -19,7 +19,7 @@ class DocumentResponse(BaseModel):
     file_type: str
     file_url: Optional[str] = None
     content: Optional[str] = None
-    metadata: Optional[dict] = None
+    meta_data: Optional[str] = None
     chunk_count: int = 0
     created_at: datetime
     updated_at: Optional[datetime] = None

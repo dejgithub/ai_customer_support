@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { auth } from '@/lib/api';
+import { useAuth } from '@/lib/auth';
 import toast from 'react-hot-toast';
 
 const categories = ['Retail', 'Restaurant', 'Hotel', 'Clinic', 'Education', 'Service'];
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { register } = useAuth();
   const [form, setForm] = useState({ business_name: '', full_name: '', email: '', password: '', confirm_password: '', category: 'Retail' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -26,7 +27,7 @@ export default function RegisterPage() {
     setLoading(true);
     setError('');
     try {
-      await auth.register({
+      await register({
         business_name: form.business_name,
         full_name: form.full_name,
         email: form.email,

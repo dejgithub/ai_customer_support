@@ -61,7 +61,7 @@ export const products = {
 };
 
 export const knowledge = {
-  upload: (formData: FormData) => fetch(`/api/v1/knowledge/upload`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` } as any, body: formData }).then(r => r.json()),
+  upload: async (formData: FormData) => { const r = await fetch(`/api/v1/knowledge/upload`, { method: 'POST', headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` } as any, body: formData }); if (!r.ok) { const err = await r.json().catch(() => ({ detail: r.statusText })); throw new Error(err.detail || 'Upload failed'); } return r.json(); },
   list: (params?: string) => request(`/api/v1/knowledge/documents${params ? '?' + params : ''}`),
   delete: (id: string) => request(`/api/v1/knowledge/documents/${id}`, { method: 'DELETE' }),
   search: (query: string) => request('/api/v1/knowledge/search', { method: 'POST', body: JSON.stringify({ query }) }),

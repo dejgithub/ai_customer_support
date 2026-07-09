@@ -131,7 +131,7 @@ async def add_ticket_message(
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
     msg = Message(
-        conversation_id=ticket.conversation_id or uuid.uuid4(),
+        conversation_id=ticket.conversation_id or str(uuid.uuid4()),
         sender_type="agent",
         sender_id=str(user.id),
         content=content,

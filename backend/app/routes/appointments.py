@@ -95,9 +95,16 @@ async def list_appointments(
     }
 
 
+VALID_STATUSES = {"scheduled", "confirmed", "completed", "cancelled"}
+
 class AppointmentUpdate(BaseModel):
     status: Optional[str] = None
     notes: Optional[str] = None
+
+    def validate_status(cls, v):
+        if v and v not in VALID_STATUSES:
+            raise ValueError(f"Invalid status. Must be one of: {', '.join(sorted(VALID_STATUSES))}")
+        return v
 
 
 @router.put("/{appointment_id}", response_model=AppointmentResponse)
@@ -119,6 +126,7 @@ async def update_appointment(
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found")
     if data.status:
+        data.validate_status(data.status)
         appointment.status = data.status
     if data.notes:
         appointment.notes = data.notes

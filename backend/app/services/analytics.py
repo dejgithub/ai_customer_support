@@ -1,4 +1,5 @@
 import uuid
+import json
 import logging
 from datetime import datetime, timedelta, timezone
 from sqlalchemy import select, func, and_
@@ -302,7 +303,7 @@ class AnalyticsService:
                 action=action,
                 resource_type=resource_type,
                 resource_id=resource_id,
-                details=details,
+                details=json.dumps(details) if details else None,
                 ip_address=ip_address,
             )
             db.add(log)

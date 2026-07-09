@@ -15,7 +15,7 @@ class Subscription(Base):
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="active")
     current_period_start: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     current_period_end: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    features: Mapped[str | None] = mapped_column(Text, nullable=True, default=dict)
+    features: Mapped[str | None] = mapped_column(Text, nullable=True, default=None)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     business = relationship("Business", back_populates="subscriptions")

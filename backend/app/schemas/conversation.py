@@ -11,7 +11,7 @@ class MessageResponse(BaseModel):
     sender_id: Optional[str] = None
     content: str
     content_type: str = "text"
-    meta_data: Optional[dict] = None
+    meta_data: Optional[str] = None
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -27,7 +27,7 @@ class ConversationResponse(BaseModel):
     language: str = "en"
     is_escalated: bool = False
     assigned_to: Optional[str] = None
-    meta_data: Optional[dict] = None
+    meta_data: Optional[str] = None
     last_message: Optional[str] = None
     message_count: int = 0
     started_at: Optional[datetime] = None

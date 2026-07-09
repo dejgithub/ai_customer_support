@@ -9,6 +9,7 @@ class OrderItemSchema(BaseModel):
     name: str
     quantity: int = 1
     unit_price: float
+    total_price: Optional[float] = None
     notes: Optional[str] = None
 
 

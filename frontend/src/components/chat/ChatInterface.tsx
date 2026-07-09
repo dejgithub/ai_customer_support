@@ -12,9 +12,9 @@ const languages = [
 ];
 
 export default function ChatInterface({
-  conversationId, messages: initialMessages, onSendMessage,
+  conversationId, messages: initialMessages, onSendMessage, suggestedActions: externalSuggestedActions,
 }: {
-  conversationId?: string; messages: Message[]; onSendMessage: (text: string, language: string) => Promise<void>;
+  conversationId?: string; messages: Message[]; onSendMessage: (text: string, language: string) => Promise<void>; suggestedActions?: string[];
 }) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState('');
@@ -24,6 +24,7 @@ export default function ChatInterface({
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { setMessages(initialMessages); }, [initialMessages]);
+  useEffect(() => { if (externalSuggestedActions) setSuggestedActions(externalSuggestedActions); }, [externalSuggestedActions]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -34,11 +35,6 @@ export default function ChatInterface({
     const text = input.trim();
     setInput('');
     setSending(true);
-    const tempMsg: Message = {
-      id: 'temp-' + Date.now(), conversation_id: conversationId || '',
-      sender_type: 'customer', content: text, content_type: 'text', created_at: new Date().toISOString(),
-    };
-    setMessages(prev => [...prev, tempMsg]);
     try {
       await onSendMessage(text, language);
     } catch {

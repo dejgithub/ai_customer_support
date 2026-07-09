@@ -14,6 +14,7 @@ export default function ConversationDetailPage() {
   const id = params.id as string;
   const [conversation, setConversation] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
+  const [suggestedActions, setSuggestedActions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAssign, setShowAssign] = useState(false);
 
@@ -33,10 +34,12 @@ export default function ConversationDetailPage() {
 
   const handleSendMessage = async (text: string, language: string) => {
     try {
+      const customerMsg = { id: 'msg-' + Date.now(), conversation_id: id, sender_type: 'customer', content: text, content_type: 'text', created_at: new Date().toISOString() };
+      setMessages(prev => [...prev, customerMsg]);
       const res = await support.chat({ message: text, conversation_id: id, language });
       setMessages(prev => [...prev, res.message]);
       if (res.suggested_actions) {
-        // show suggested actions
+        setSuggestedActions(res.suggested_actions);
       }
     } catch (err: any) {
       toast.error('Failed to send message');
@@ -87,7 +90,7 @@ export default function ConversationDetailPage() {
             <Button size="sm" onClick={() => { const input = document.querySelector<HTMLInputElement>('[placeholder="Agent ID..."]'); if (input?.value) handleAssign(input.value); }}>Assign</Button>
           </div>
         )}
-        <ChatInterface conversationId={id} messages={messages} onSendMessage={handleSendMessage} />
+        <ChatInterface conversationId={id} messages={messages} onSendMessage={handleSendMessage} suggestedActions={suggestedActions} />
       </div>
       <div className="lg:w-72 card h-fit">
         <h3 className="font-semibold text-gray-900 mb-4">Conversation Info</h3>

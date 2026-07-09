@@ -19,3 +19,5 @@ babel==2.14.0
 sse-starlette==1.8.2
 redis==5.0.1
 celery==5.3.6
+PyPDF2==3.0.1
+python-docx==1.1.0

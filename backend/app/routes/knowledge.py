@@ -43,7 +43,7 @@ async def upload_document(
             title=doc_title,
             file_type=file_type,
             content=processed["text"],
-            metadata={"original_filename": file.filename, "file_size": len(content)},
+            meta_data=str({"original_filename": file.filename, "file_size": len(content)}),
         )
         db.add(document)
         await db.flush()

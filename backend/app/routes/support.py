@@ -1,4 +1,5 @@
 import uuid
+import json
 import logging
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -113,7 +114,7 @@ async def chat(
             sender_id="smartsupport-ai",
             content=ai_response,
             content_type="text",
-            meta_data=str({"intent": intent, "language": detected_lang}),
+            meta_data=json.dumps({"intent": intent, "language": detected_lang}),
         )
         db.add(ai_msg)
         await db.flush()
